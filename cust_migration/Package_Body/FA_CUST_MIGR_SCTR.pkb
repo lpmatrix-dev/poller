@@ -517,8 +517,18 @@ CREATE OR REPLACE PACKAGE BODY fa_cust_migr_sctr AS
                         END
                     ) as_is_code
                 into
-                    l_validation_id,l_insis_product_code_rev,l_sales_channel_code_rev,l_office_number_rev,l_currency_code_rev,l_calculation_type_rev,l_billing_type_rev,l_billing_way_rev,l_policy_holder_code_rev
-,l_broker_code_rev,l_agent_type,l_as_is_product_code_rev
+                    l_validation_id,
+                    l_insis_product_code_rev,
+                    l_sales_channel_code_rev,
+                    l_office_number_rev,
+                    l_currency_code_rev,
+                    l_calculation_type_rev,
+                    l_billing_type_rev,
+                    l_billing_way_rev,
+                    l_policy_holder_code_rev,
+                    l_broker_code_rev,
+                    l_agent_type,
+                    l_as_is_product_code_rev
                 FROM dual;
 
             EXCEPTION
@@ -1135,7 +1145,24 @@ CREATE OR REPLACE PACKAGE BODY fa_cust_migr_sctr AS
 
                 v_exito   := 'ERR';
             END IF;
-
+            
+            IF
+                  rec_sctr_master.prem_period_code > 0 and add_months(
+                        tdate(rec_sctr_master.begin_date),
+                        rec_sctr_master.prem_period_code
+                  ) > tdate(rec_sctr_master.end_date)
+            then
+                  ins_error_stg(
+                        pi_control_id,
+                        rec_sctr_master.stag_id,
+                        'ERR',
+                        'Master prem_period_code',
+                        'Master Premium Period > Policy duration',
+                        pio_err
+                  );
+                  v_exito   := 'ERR';
+            end if;
+            
             IF
                 v_exito = 'OK'
             THEN
