@@ -1,0 +1,126 @@
+<Poller name="XLS_MIGR_DSGR_MP" 
+        class="com.fadata.insis.adapters.fileadapter.XLSXImportFilePoller" 
+        startingFrom="now" 
+        pollingInterval="30s" 
+        queueDir="${domain.home}/../../applications/${weblogic.domain}/${weblogic.Name}/pollers/migration_dsgrmp/import/queue" 
+        archiveDir="${domain.home}/../../applications/${weblogic.domain}/${weblogic.Name}/pollers/migration_dsgrmp/import/archive" 
+        errorDir="${domain.home}/../../applications/${weblogic.domain}/${weblogic.Name}/pollers/migration_dsgrmp/import/errors" 
+        metadataDir="${domain.home}/../../applications/${weblogic.domain}/${weblogic.Name}/pollers/migration_dsgrmp/import/meta" 
+        logErrorsIntoDB="true" 
+        stopOnError="false">
+    <PreProcess>
+        <Function signature="{ call insis_cust_lpv.sys_schema_utils.Insert_Poller_Process(?,?,?) }">
+            <InParam index="1" type="VARCHAR" value="XLS_MIGR_DSGR_MP"/>
+            <InParam index="2" type="VARCHAR" value="meta:file:name"/>
+            <OutParam index="3" type="INTEGER" hint="Result"/>
+        </Function>
+    </PreProcess>
+    <Element xpath="#1" startFromRow="1">
+        <Function signature="{ call cust_migration.fa_cust_migr_dsgr_mp.upload_row_pol(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) }">
+            <InParam index="1" type="NUMBER" value="ref:PreProcess#Function##3"/>  <!-- CONTROL_ID-->
+            <InParam index="2" type="NUMBER" value="0"/>  <!-- STAG_ID-->
+            <InParam index="3" type="VARCHAR2" value="data:?sheet=1&amp;column=1"/>  <!-- PHOLDER_PID-->
+            <InParam index="4" type="VARCHAR2" value="data:?sheet=1&amp;column=2"/>  <!-- PHOLDER_NAME-->
+            <InParam index="5" type="VARCHAR2" value="data:?sheet=1&amp;column=3"/>  <!-- FINANCIAL_ENT_PID-->
+            <InParam index="6" type="VARCHAR2" value="data:?sheet=1&amp;column=4"/>  <!-- FINANCIAL_ENT_NAME-->
+            <InParam index="7" type="VARCHAR2" value="data:?sheet=1&amp;column=5"/>  <!-- PAYOR_PID-->
+            <InParam index="8" type="VARCHAR2" value="data:?sheet=1&amp;column=6"/>  <!-- PAYOR_NAME-->
+            <InParam index="9" type="VARCHAR2" value="data:?sheet=1&amp;column=7"/>  <!-- ASIS_CODE-->
+            <InParam index="10" type="VARCHAR2" value="data:?sheet=1&amp;column=8"/>  <!-- ASIS_NAME-->
+            <InParam index="11" type="VARCHAR2" value="data:?sheet=1&amp;column=9"/>  <!-- INTERNAL_AG_PID-->
+            <InParam index="12" type="VARCHAR2" value="data:?sheet=1&amp;column=10"/>  <!-- INTERNAL_AG_NAME-->
+            <InParam index="13" type="VARCHAR2" value="data:?sheet=1&amp;column=11"/>  <!-- POLICY_NO-->
+            <InParam index="14" type="VARCHAR2" value="data:?sheet=1&amp;column=12"/>  <!-- INSR_BEGIN-->
+            <InParam index="15" type="VARCHAR2" value="data:?sheet=1&amp;column=13"/>  <!-- INSR_END-->
+            <InParam index="16" type="VARCHAR2" value="data:?sheet=1&amp;column=14"/>  <!-- POLICY_STATE_DESC-->
+            <InParam index="17" type="VARCHAR2" value="data:?sheet=1&amp;column=15"/>  <!-- CURRENCY-->
+            <InParam index="18" type="NUMBER" value="data:?sheet=1&amp;column=16"/>  <!-- SALES_CHANNEL_ID-->
+            <InParam index="19" type="VARCHAR2" value="data:?sheet=1&amp;column=17"/>  <!-- SALES_CHANNEL_DESC-->
+            <InParam index="20" type="VARCHAR2" value="data:?sheet=1&amp;column=18"/>  <!-- OFFICE_LP_NO-->
+            <InParam index="21" type="VARCHAR2" value="data:?sheet=1&amp;column=19"/>  <!-- OFFICE_LP_NAME-->
+            <InParam index="22" type="VARCHAR2" value="data:?sheet=1&amp;column=20"/>  <!-- EPOLICY_FLAG-->
+            <InParam index="23" type="VARCHAR2" value="data:?sheet=1&amp;column=21"/>  <!-- PAY_FREQUENCY_DESC-->
+            <InParam index="24" type="VARCHAR2" value="data:?sheet=1&amp;column=22"/>  <!-- BILLING_TYPE_DESC-->
+            <InParam index="25" type="VARCHAR2" value="data:?sheet=1&amp;column=23"/>  <!-- BILLING_PARTY_DESC-->
+            <InParam index="26" type="VARCHAR2" value="data:?sheet=1&amp;column=24"/>  <!-- MINIMUM_PREM-->
+            <InParam index="27" type="VARCHAR2" value="data:?sheet=1&amp;column=25"/>  <!-- IV_TYPE_DESC-->
+            <InParam index="28" type="NUMBER" value="data:?sheet=1&amp;column=26"/>  <!-- ISS_EXPENSE_PERC-->
+            <InParam index="29" type="VARCHAR2" value="data:?sheet=1&amp;column=27"/>  <!-- UNIDENTIFIED_IO_FLAG-->
+            <InParam index="30" type="VARCHAR2" value="data:?sheet=1&amp;column=28"/>  <!-- CONSORTIUM_FLAG-->
+            <InParam index="31" type="VARCHAR2" value="data:?sheet=1&amp;column=29"/>  <!-- CONSORTIUM_LEADER-->
+            <InParam index="32" type="NUMBER" value="data:?sheet=1&amp;column=30"/>  <!-- TERM_DISEASE_PERC-->
+            <InParam index="33" type="VARCHAR2" value="data:?sheet=1&amp;column=31"/>  <!-- BROKER_PID-->
+            <InParam index="34" type="VARCHAR2" value="data:?sheet=1&amp;column=32"/>  <!-- BROKER_NAME-->
+            <InParam index="35" type="VARCHAR2" value="data:?sheet=1&amp;column=33"/>  <!-- BROKER_COM_PERC-->
+            <InParam index="36" type="VARCHAR2" value="data:?sheet=1&amp;column=34"/>  <!-- MARKETER_C_PID-->
+            <InParam index="37" type="VARCHAR2" value="data:?sheet=1&amp;column=35"/>  <!-- MARKETER_C_NAME-->
+            <InParam index="38" type="VARCHAR2" value="data:?sheet=1&amp;column=36"/>  <!-- MARKETER_COMM-->
+            <InParam index="39" type="VARCHAR2" value="data:?sheet=1&amp;column=37"/>  <!-- MARKETER_GU_COLL_PID-->
+            <InParam index="40" type="VARCHAR2" value="data:?sheet=1&amp;column=38"/>  <!-- MARKETER_GU_COLL_NAME-->
+            <InParam index="41" type="VARCHAR2" value="data:?sheet=1&amp;column=39"/>  <!-- MARKETER_GU_COLL_COMM-->
+            <InParam index="42" type="VARCHAR2" value="data:?sheet=1&amp;column=40"/>  <!-- MARKETER_GU_ACQ_PID-->
+            <InParam index="43" type="VARCHAR2" value="data:?sheet=1&amp;column=41"/>  <!-- MARKETER_GU_ACQ_NAME-->
+            <InParam index="44" type="VARCHAR2" value="data:?sheet=1&amp;column=42"/>  <!-- MARKETER_GU_ACQ_COMM-->
+            <InParam index="45" type="VARCHAR2" value="data:?sheet=1&amp;column=43"/>  <!-- MARKETER_PS_PID-->
+            <InParam index="46" type="VARCHAR2" value="data:?sheet=1&amp;column=44"/>  <!-- MARKETER_PS_NAME-->
+            <InParam index="47" type="NUMBER" value="data:?sheet=1&amp;column=45"/>  <!-- MARKETER_PS_COMM-->
+            <InParam index="48" type="VARCHAR2" value="data:?sheet=1&amp;column=46"/>  <!-- BENEF_PROV_PID-->
+            <InParam index="49" type="VARCHAR2" value="data:?sheet=1&amp;column=47"/>  <!-- BENEF_PROV_NAME-->
+            <InParam index="50" type="NUMBER" value="data:?sheet=1&amp;column=48"/>  <!-- EXPENSE_DEDUC_PREM_PERC-->
+            <InParam index="51" type="VARCHAR2" value="data:?sheet=1&amp;column=49"/>  <!-- BENEF_PROV_AMOUNT-->
+            <InParam index="52" type="VARCHAR2" value="data:?sheet=1&amp;column=50"/>  <!-- ASSIST_TYPE-->
+            <InParam index="53" type="VARCHAR2" value="data:?sheet=1&amp;column=51"/>  <!-- SPECIAL_CLAUSES-->
+            <InParam index="54" type="NUMBER" value="data:?sheet=1&amp;column=52"/>  <!-- UW_MIN_ENTRY_AGE-->
+            <InParam index="55" type="NUMBER" value="data:?sheet=1&amp;column=53"/>  <!-- UW_MAX_ENTRY_AGE-->
+            <InParam index="56" type="NUMBER" value="data:?sheet=1&amp;column=54"/>  <!-- AUTO_INDEM_MAX_AMOUNT-->
+            <InParam index="57" type="VARCHAR2" value="data:?sheet=1&amp;column=55"/>  <!-- LOAN_TYPE-->
+            <InParam index="58" type="NUMBER" value="data:?sheet=1&amp;column=56"/>  <!-- MAIN_COV_MAX_IV-->
+            <InParam index="59" type="NUMBER" value="data:?sheet=1&amp;column=57"/>  <!-- MAIN_COV_MIN_IV-->
+            <InParam index="60" type="NUMBER" value="data:?sheet=1&amp;column=58"/>  <!-- MAIN_IO_MAX_PERM_AGE-->
+            <InParam index="61" type="VARCHAR2" value="data:?sheet=1&amp;column=59"/>  <!-- COINSURANCE_FOLL_FLAG-->
+            <InParam index="62" type="VARCHAR2" value="data:?sheet=1&amp;column=60"/>  <!-- COINSURANCE_LEAD_FLAG-->
+            <InParam index="63" type="VARCHAR2" value="data:?sheet=1&amp;column=61"/>  <!-- AUTO_REINSURANCE_FLAG-->
+            <InParam index="64" type="VARCHAR2" value="data:?sheet=1&amp;column=62"/>  <!-- FACUL_REINSURANCE_FLAG-->
+        </Function>
+    </Element>
+    <Element xpath="#2" startFromRow="1">
+        <Function signature="{ call cust_migration.fa_cust_migr_dsgr_mp.upload_row_cov(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) }">
+            <InParam index="1" type="NUMBER" value="ref:PreProcess#Function##3"/>  <!-- CONTROL_ID-->
+            <InParam index="2" type="NUMBER" value="0"/>  <!-- STAG_ID-->
+            <InParam index="3" type="VARCHAR2" value="data:?sheet=1&amp;column=1"/>  <!-- POLICY_NO-->
+            <InParam index="4" type="VARCHAR2" value="data:?sheet=1&amp;column=2"/>  <!-- PLAN_NAME-->
+            <InParam index="5" type="VARCHAR2" value="data:?sheet=1&amp;column=3"/>  <!-- SUBPLAN_NAME-->
+            <InParam index="6" type="VARCHAR2" value="data:?sheet=1&amp;column=4"/>  <!-- MANUAL_PREM_DIM_DESC-->
+            <InParam index="7" type="VARCHAR2" value="data:?sheet=1&amp;column=5"/>  <!-- PREM_RATE-->
+            <InParam index="8" type="VARCHAR2" value="data:?sheet=1&amp;column=6"/>  <!-- PREM_VALUE-->
+            <InParam index="9" type="NUMBER" value="data:?sheet=1&amp;column=7"/>  <!-- PLAN_MAX_AGE-->
+            <InParam index="10" type="NUMBER" value="data:?sheet=1&amp;column=8"/>  <!-- PLAN_MIN_AGE-->
+            <InParam index="11" type="NUMBER" value="data:?sheet=1&amp;column=9"/>  <!-- MAX_OUTSTAND-->
+            <InParam index="12" type="NUMBER" value="data:?sheet=1&amp;column=10"/>  <!-- MIN_OUTSTAND-->
+            <InParam index="13" type="NUMBER" value="data:?sheet=1&amp;column=11"/>  <!-- MAX_IV-->
+            <InParam index="14" type="VARCHAR2" value="data:?sheet=1&amp;column=12"/>  <!-- MAX_LOAN_DUR-->
+            <InParam index="15" type="VARCHAR2" value="data:?sheet=1&amp;column=13"/>  <!-- MIN_LOAN_DUR-->
+            <InParam index="16" type="VARCHAR2" value="data:?sheet=1&amp;column=14"/>  <!-- MAIN_ADD_COVER_FLAG-->
+            <InParam index="17" type="VARCHAR2" value="data:?sheet=1&amp;column=15"/>  <!-- COVER_TYPE-->
+            <InParam index="18" type="VARCHAR2" value="data:?sheet=1&amp;column=16"/>  <!-- COVER_NAME-->
+            <InParam index="19" type="VARCHAR2" value="data:?sheet=1&amp;column=17"/>  <!-- GU_COMERCIAL_PREMIUM-->
+            <InParam index="20" type="VARCHAR2" value="data:?sheet=1&amp;column=18"/>  <!-- GU_LP_PREMIUM-->
+            <InParam index="21" type="VARCHAR2" value="data:?sheet=1&amp;column=19"/>  <!-- MARK_C_SPEC_COMM_TYPE-->
+            <InParam index="22" type="VARCHAR2" value="data:?sheet=1&amp;column=20"/>  <!-- MARK_C_SPEC_COMM-->
+            <InParam index="23" type="VARCHAR2" value="data:?sheet=1&amp;column=21"/>  <!-- MARK_C_SPEC_DIM-->
+            <InParam index="24" type="VARCHAR2" value="data:?sheet=1&amp;column=22"/>  <!-- MARK_GU_COLL_SPEC_COMM_TYPE-->
+            <InParam index="25" type="VARCHAR2" value="data:?sheet=1&amp;column=23"/>  <!-- MARK_GU_COLL_SPEC_COMM-->
+            <InParam index="26" type="VARCHAR2" value="data:?sheet=1&amp;column=24"/>  <!-- MARK_GU_COLL_SPEC_DIM-->
+            <InParam index="27" type="VARCHAR2" value="data:?sheet=1&amp;column=25"/>  <!-- MARK_GU_ADQ_SPEC_COMM_TYPE-->
+            <InParam index="28" type="VARCHAR2" value="data:?sheet=1&amp;column=26"/>  <!-- MARK_GU_ADQ_SPEC_COMM-->
+            <InParam index="29" type="VARCHAR2" value="data:?sheet=1&amp;column=27"/>  <!-- MARK_GU_ADQ_SPEC_DIM-->
+        </Function>
+    </Element>
+    <PostProcess>
+        <Function signature="{ call cust_migration.fa_cust_migr_dsgr_mp.process_main(?, ?, ?) }">
+            <InParam index="1" type="INTEGER" value="ref:PreProcess#Function##3"/> <!-- CONTROL_ID-->
+            <InParam index="2" type="VARCHAR" value="meta:context:FILE_ID"/> <!-- FILE_ID-->
+            <InParam index="3" type="VARCHAR" value="meta:file:name"/> <!-- FILE_NAME-->
+        </Function> 
+    </PostProcess> 
+</Poller>
