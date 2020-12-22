@@ -1,4 +1,4 @@
-CREATE OR REPLACE PACKAGE BODY fa_cust_migr_sctr AS
+create or replace PACKAGE BODY fa_cust_migr_sctr AS
     --------------------------------------------------------------------------------
     -- Name: FA_CUST_MIGR_SCTR
     -------------------------------------
@@ -20,6 +20,8 @@ CREATE OR REPLACE PACKAGE BODY fa_cust_migr_sctr AS
     --     LPV-FRAMEND0     2020-04-18      ISS069-Set Default Value For Tariff when no value in poller
     --     LPV-FRAMEND0     2020-09-28      ISS096-Remove mining flag 
     --     LPV-FRAMEND0     2020-09-28      ISS104-Added internal agent & economic group
+    --     LPV-JAVCANC0     2020-12-09      SPRINT7-Remove section_code & add validate policy_no exists
+    --     LPV-JAVCANC0     2020-12-09      SPRINT8-add validate WarrantyClauseFlag vs SpecPenClauseFlag and Commiss_Perc (broker N0000202587)
     ---------------------------------------------------------------------------------
 
     l_log_seq_ini cust_migration.sta_log.rec_count%TYPE := 1300000000000;
@@ -153,7 +155,7 @@ CREATE OR REPLACE PACKAGE BODY fa_cust_migr_sctr AS
         pi_office_number IN fa_migr_sctr_stg.office_number%TYPE,
         pi_activity_code IN fa_migr_sctr_stg.activity_code%TYPE,
         pi_activity_detail IN fa_migr_sctr_stg.activity_detail%TYPE,
-        pi_section_code IN fa_migr_sctr_stg.section_code%TYPE,
+--        pi_section_code IN fa_migr_sctr_stg.section_code%TYPE,
         pi_currency_code IN fa_migr_sctr_stg.currency_code%TYPE,
         pi_begin_date IN fa_migr_sctr_stg.begin_date%TYPE,
         pi_end_date IN fa_migr_sctr_stg.end_date%TYPE,
@@ -220,7 +222,7 @@ CREATE OR REPLACE PACKAGE BODY fa_cust_migr_sctr AS
             office_number,
             activity_code,
             activity_detail,
-            section_code,
+--            section_code,
             currency_code,
             begin_date,
             end_date,
@@ -274,7 +276,7 @@ CREATE OR REPLACE PACKAGE BODY fa_cust_migr_sctr AS
             pi_office_number,
             pi_activity_code,
             pi_activity_detail,
-            pi_section_code,
+--            pi_section_code,
             pi_currency_code,
             pi_begin_date,
             pi_end_date,
@@ -359,6 +361,10 @@ CREATE OR REPLACE PACKAGE BODY fa_cust_migr_sctr AS
         l_as_is_product_code_rev insis_gen_v10.hs_cond_dimension.id%TYPE;
         l_agent_type insis_people_v10.p_agents.agent_type%TYPE;
         l_internal_agent_type insis_people_v10.pp_agent_type;
+        l_control_id number;
+        l_policy_id insis_gen_v10.policy.policy_id%type;
+        l_policy_no insis_gen_v10.policy.policy_no%type;
+        l_file_name VARCHAR2(1000);
         pio_err srverr;
         v_count_errors NUMBER;
         --JOB
@@ -501,7 +507,7 @@ CREATE OR REPLACE PACKAGE BODY fa_cust_migr_sctr AS
                             --ISS025-Uses INSUNIX codes     
                          AND lc.insunix_code = rec_sctr_master.broker_code
                     ) agent_id,
-                       (
+                    (
                         SELECT pa.agent_type
                         FROM insis_cust.intrf_lpv_people_ids lc,
                              insis_people_v10.p_agents pa
@@ -514,8 +520,13 @@ CREATE OR REPLACE PACKAGE BODY fa_cust_migr_sctr AS
                             WHEN rec_sctr_master.as_is_product_code = '0' THEN 'Y'
                             ELSE
                                 'N'
-                        END
-                    ) as_is_code
+                        end
+                    ) as_is_code,
+                    (
+                        select nvl(p.policy_no,'9999999999')
+                        from insis_gen_v10.policy p                                                      
+                        where p.policy_no   = rec_sctr_master.policy_name  
+                    ) policy_no
                 into
                     l_validation_id,
                     l_insis_product_code_rev,
@@ -528,7 +539,8 @@ CREATE OR REPLACE PACKAGE BODY fa_cust_migr_sctr AS
                     l_policy_holder_code_rev,
                     l_broker_code_rev,
                     l_agent_type,
-                    l_as_is_product_code_rev
+                    l_as_is_product_code_rev,
+                    l_policy_no 
                 FROM dual;
 
             EXCEPTION
@@ -698,6 +710,26 @@ CREATE OR REPLACE PACKAGE BODY fa_cust_migr_sctr AS
                     v_exito   := 'ERR';
                 END IF;
             END IF;
+            
+            IF
+                rec_sctr_master.broker_code = 'N0000202587'
+            THEN --DIRECTOS
+                IF
+                    rec_sctr_master.commiss_perc <> 0
+                THEN
+                     ins_error_stg(
+                        pi_control_id,
+                        rec_sctr_master.stag_id,
+                        'ERR',
+                        'Upload_SctrMaster_Validation_Commiss_Perc',
+--                        'for broker N0000202587, commission must be 0',
+                        srv_error.getsrvmessage('Upload_SctrMaster_Validation_Commiss_Perc'),
+                        pio_err
+                  );
+                  
+                  v_exito   := 'ERR';
+                  END IF;
+            END IF;
 
             IF rec_sctr_master.sales_channel_code IS NULL
             THEN
@@ -791,19 +823,19 @@ CREATE OR REPLACE PACKAGE BODY fa_cust_migr_sctr AS
 --                v_exito := 'ERR';
 --            END IF;
 
-            IF rec_sctr_master.section_code IS NULL
-            THEN
-                ins_error_stg(
-                    pi_control_id,
-                    rec_sctr_master.stag_id,
-                    'ERR',
-                    'Upload_SctrMaster_Null_Section_Code',
-                    srv_error.getsrvmessage('Upload_SctrMaster_Null_Section_Code'),
-                    pio_err
-                );
-
-                v_exito   := 'ERR';
-            END IF;
+--            IF rec_sctr_master.section_code IS NULL
+--            THEN
+--                ins_error_stg(
+--                    pi_control_id,
+--                    rec_sctr_master.stag_id,
+--                    'ERR',
+--                    'Upload_SctrMaster_Null_Section_Code',
+--                    srv_error.getsrvmessage('Upload_SctrMaster_Null_Section_Code'),
+--                    pio_err
+--                );
+--
+--                v_exito   := 'ERR';
+--            END IF;
 
             IF rec_sctr_master.currency_code IS NULL
             THEN
@@ -1082,6 +1114,22 @@ CREATE OR REPLACE PACKAGE BODY fa_cust_migr_sctr AS
 
                 v_exito   := 'ERR';
             END IF;
+            
+            IF (rec_sctr_master.warranty_clause_flag = 'Y' AND  rec_sctr_master.spec_pen_clause_flag = 'Y') OR (rec_sctr_master.warranty_clause_flag = 'N' AND  rec_sctr_master.spec_pen_clause_flag = 'N')
+            THEN
+                  ins_error_stg(
+                        pi_control_id,
+                        rec_sctr_master.stag_id,
+                        'ERR',
+--                        'WarrantyClauseFlag&SpecPenClauseFlag',
+--                        'WarrantyClauseFlag&SpecPenClauseFlag both values should not be the same',
+                        'Upload_SctrMaster_Validation_WarrantyFlag_PenFlag',
+                        srv_error.getsrvmessage('Upload_SctrMaster_Validation_WarrantyFlag_PenFlag'),
+                        pio_err
+                  );
+                  
+                  v_exito   := 'ERR';
+            END IF;
 
 --            IF rec_sctr_master.spec_pen_clause_detail IS NULL THEN
 --                ins_error_stg(pi_control_id,rec_sctr_master.stag_id,rec_sctr_master.rowseq,1,'cust_migration.FA_CUST_MIGR_SCTR.sctr_wrapper',
@@ -1156,12 +1204,56 @@ CREATE OR REPLACE PACKAGE BODY fa_cust_migr_sctr AS
                         pi_control_id,
                         rec_sctr_master.stag_id,
                         'ERR',
-                        'Master prem_period_code',
-                        'Master Premium Period > Policy duration',
+--                        'Master prem_period_code',
+                        'Upload_SctrMaster_Validation_prem_period_code',
+                        srv_error.getsrvmessage('Upload_SctrMaster_Validation_prem_period_code'),
+--                        'Master Premium Period > Policy duration',
                         pio_err
                   );
                   v_exito   := 'ERR';
             end if;
+            
+            if
+                  rec_sctr_master.policy_name is null
+            then
+                  ins_error_stg(
+                        pi_control_id,
+                        rec_sctr_master.stag_id,
+                        'ERR',
+                        'Master policy_name',
+                        'Master policy_name Null',
+                        pio_err
+                  );
+                  v_exito   := 'ERR';
+            else
+                  if 
+                        l_policy_no <> '9999999999'
+                  then 
+                        select p.policy_id, c.file_name
+                        into l_policy_id, l_file_name
+                        from insis_gen_v10.policy p
+                              left join cust_migration.fa_migr_sctr_stg s on
+                                    ( p.policy_id   = s.att_policy_id
+                                    )
+                              left join insis_cust_lpv.sys_poller_process_ctrl c on
+                                    ( c.SYS_POLLER_PROCESS_CTRL_ID   = s.CONTROL_ID
+                                    )
+                        where p.policy_no   = rec_sctr_master.policy_name
+                          and control_id <> pi_control_id;
+                        ins_error_stg(
+                              pi_control_id,
+                              rec_sctr_master.stag_id,
+                              'ERR',
+                              'Master policy_name',
+                              'Master policy_no exists loaded with file_name: ' || l_file_name || ' Policy_id : ' || l_policy_id, 
+                              pio_err
+                        );
+                        v_exito   := 'ERR';  
+                  end if;
+            end if;
+            
+            
+            
             
             IF
                 v_exito = 'OK'
@@ -3417,6 +3509,7 @@ CREATE OR REPLACE PACKAGE BODY fa_cust_migr_sctr AS
         l_errseq   := l_errseq + 1;
 --        insis_sys_v10.srv_error.seterrormsg(l_errmsg,pi_fn_name,pi_error_id);
 --        insis_sys_v10.srv_error.seterrormsg(l_errmsg,pio_errmsg);
+        putlog(pi_control_id,pi_stag_id,pi_errmess);
         INSERT INTO fa_migr_sctr_err (
             control_id,
             stag_id,

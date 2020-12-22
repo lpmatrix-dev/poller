@@ -1,82 +1,64 @@
---control pollers
-SELECT c.*,--to_char(sysdate - c.date_init,'dd/mm/yyyy HH24:MI:SS') elap,
---     (select count(1) from cust_migration.lpv_sctr_master_stg s where s.ctrl_id = c.sys_poller_process_ctrl_id ) cant,
+/*==============control pollers SCTR=============================*/
+SELECT c.*,
        (
             SELECT COUNT(1)
             FROM cust_migration.fa_migr_sctr_stg s
             WHERE s.control_id   = c.sys_poller_process_ctrl_id
       ) cant
 FROM insis_cust_lpv.sys_poller_process_ctrl c
-WHERE 1 = 1
-      AND poller_name LIKE 'XLS_MIGR_SCTR%' 
---    and sys_poller_process_ctrl_id = 42249
-ORDER BY 1 DESC;
-
---control pollers sctr
-SELECT *
-FROM cust_migration.lpv_sctr_master_ctrl
---WHERE
---    poller_name = 'XLS_UPLOAD_SCTR'
---    and sys_poller_process_ctrl_id = sys_ctrl_id
-ORDER BY 1 DESC;
+where 1 = 1
+      AND poller_name LIKE 'XLS_MIGR_SCTR%'
+--      AND --            sys_poller_process_ctrl_id   = 42249
+order by 1 desc;
 
 
---log v2
---delete (
+/*================log pollers SCTR==============================*/
 SELECT *
 FROM sta_log
-WHERE 1 = 1 AND table_name = 'FA_CUST_MIGR_SCTR' --'LPV_SCTR_MASTER'
- AND batch_id LIKE (
-        SELECT MAX(sys_poller_process_ctrl_id) || '%'
-        FROM insis_cust_lpv.sys_poller_process_ctrl c
-        WHERE 1 = 1 AND poller_name = 'XLS_MIGR_SCTR'
-    )
+WHERE 1 = 1
+      AND table_name   = 'FA_CUST_MIGR_SCTR'
+      and batch_id in (
+                  '57134'
+            )
+--      AND batch_id like (
+--                  SELECT MAX(sys_poller_process_ctrl_id) || '%'
+--                  FROM insis_cust_lpv.sys_poller_process_ctrl c
+--                  WHERE 1 = 1
+--                        AND poller_name   = 'XLS_MIGR_SCTR'
+--            )
 --    and log_message like '%[8]%'
-ORDER BY batch_id,
---    rec_count,
+ORDER BY batch_id,rec_count,
 --    log_message,
- time_stamp 
---)
-;
-
---data
+ time_stamp;
+ 
+/*===============data pollers SCTR=============================*/ 
+ 
 SELECT *
 FROM cust_migration.fa_migr_sctr_stg
-WHERE 1 = 1 AND control_id IN --(45379)
- (
-        SELECT 56714--max(SYS_POLLER_PROCESS_CTRL_ID)
-        FROM insis_cust_lpv.sys_poller_process_ctrl c
-        WHERE 1 = 1 AND poller_name = 'XLS_MIGR_SCTR'
-    )
+WHERE 1 = 1
+      AND control_id IN (
+                  SELECT max(SYS_POLLER_PROCESS_CTRL_ID)
+                  FROM insis_cust_lpv.sys_poller_process_ctrl c
+                  WHERE 1 = 1
+                        AND poller_name   = 'XLS_MIGR_SCTR'
+            )
 ORDER BY control_id DESC,stag_id;
 
---select *
---from cust_migration.lpv_sctr_master_stg
---where 1=1
---and ctrl_id in (44290)
-----and policy_id = 100000071387
---order by ctrl_id desc, stg_id
---;
+/*===============error pollers SCTR=============================*/ 
 
-
---error
 SELECT *
 FROM cust_migration.fa_migr_sctr_err
-WHERE 1 = 1 AND control_id IN (
-        SELECT MAX(sys_poller_process_ctrl_id)
-        FROM insis_cust_lpv.sys_poller_process_ctrl c
-        WHERE 1 = 1 AND poller_name LIKE 'XLS_MIGR_SCTR%'
-    )
+WHERE 1 = 1
+      AND control_id IN (
+                  SELECT MAX(sys_poller_process_ctrl_id)
+                  FROM insis_cust_lpv.sys_poller_process_ctrl c
+                  WHERE 1 = 1
+                        AND poller_name LIKE 'XLS_MIGR_SCTR%'
+            )
 --and policy_id = 100000071387
 --and errseq = 0
 ORDER BY control_id DESC,stag_id;
 
---select *
---from cust_migration.lpv_sctr_master_error_log
---where 1=1
---and sys_poller_process_ctrl_id = 44290
---order by sys_poller_process_ctrl_id desc, stg_id 
---;
 
 --------------------------
 --reporte
@@ -392,10 +374,10 @@ SELECT * FROM lpv_sctr_master_stg WHERE ctrl_id = 44290;
 --===============================================================================
 
 DECLARE
-  SYS_CTRL_ID NUMBER := 44290; --43871;
-  FILE_ID NUMBER := 3090019802;
-  FILE_NAME VARCHAR2(200) := 'UPLOAD SCTR_TRAMA FINAL.20200408.fmh.xlsx';
-  POLLER_NAME VARCHAR2(200) := 'XLS_UPLOAD_SCTR';
+  SYS_CTRL_ID NUMBER := 57134; --43871;
+  FILE_ID NUMBER := 3090021740;
+  FILE_NAME VARCHAR2(200) := 'v7.3.xlsx';
+  POLLER_NAME VARCHAR2(200) := 'XLS_MIGR_SCTR';
 BEGIN
 
     --deletes previuos report record
@@ -515,9 +497,9 @@ UPDATE
     WHERE 1=1
     AND policy_no IN (SELECT UNIQUE REPLACE(s.policy_name, ' ', '')  polno
 --    and policy_id in (select unique s.att_policy_id
-                        FROM cust_migration.fa_migr_sctr_stg s 
-                        WHERE control_id  = (
-                                        SELECT
+                        from cust_migration.fa_migr_sctr_stg s 
+                        where control_id  = (
+                                        select 
                                                 MAX(sys_poller_process_ctrl_id)
                                             FROM
                                                 insis_cust_lpv.sys_poller_process_ctrl
@@ -530,4 +512,21 @@ UPDATE
     )
     set policy_no = new_polno
     --policy_name = new_polno
-    WHERE actual_polno <> new_polno
+    WHERE actual_polno <> new_polno;
+    
+ 
+ 
+ select *
+ from insis_gen_v10.policy
+ where policy_no in (
+'25416602',
+'25416603',
+'25416604',
+'25416605',
+'25416606',
+'25416607',
+'25416608',
+'25416609',
+'25416610',
+'25416611'
+);
