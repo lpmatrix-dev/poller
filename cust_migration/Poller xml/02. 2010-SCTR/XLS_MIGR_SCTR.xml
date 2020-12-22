@@ -1,0 +1,82 @@
+<Poller name="XLS_MIGR_SCTR" 
+        class="com.fadata.insis.adapters.fileadapter.XLSXImportFilePoller" 
+        pollingInterval="30s" 
+        startingFrom="never" 
+        queueDir="${domain.home}/../../applications/${weblogic.domain}/${weblogic.Name}/pollers/migration_sctr/import/queue" 
+        archiveDir="${domain.home}/../../applications/${weblogic.domain}/${weblogic.Name}/pollers/migration_sctr/import/archive" 
+        errorDir="${domain.home}/../../applications/${weblogic.domain}/${weblogic.Name}/pollers/migration_sctr/import/errors" 
+        metadataDir="${domain.home}/../../applications/${weblogic.domain}/${weblogic.Name}/pollers/migration_sctr/import/meta" 
+        logErrorsIntoDB="false" 
+        stopOnError="true">
+    <PreProcess>
+        <Function signature="{ call INSIS_CUST_LPV.SYS_SCHEMA_UTILS.Insert_Poller_Process(?,?,?) }">
+            <InParam index="1" type="VARCHAR" value="XLS_MIGR_SCTR"/>
+            <InParam index="2" type="VARCHAR" value="meta:file:name"/>
+            <OutParam index="3" type="INTEGER" hint="Result"/>
+        </Function>
+    </PreProcess>
+    <Element xpath="#1" startFromRow="1">
+        <Function signature="{ call CUST_MIGRATION.FA_CUST_MIGR_SCTR.upload_file_data(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) }">
+            <InParam index="1" type="NUMBER" value="ref:PreProcess#Function##3"/>  <!-- CTRL_ID-->
+            <InParam index="2" type="NUMBER" value="0"/>  <!-- STG_ID-->
+            <InParam index="3" type="NUMBER" value="data:?sheet=1&amp;column=1"/>  <!-- ROWSEQ-->
+            <InParam index="4" type="NUMBER" value="data:?sheet=1&amp;column=2"/>  <!-- INSIS_PRODUCT_CODE-->
+            <InParam index="5" type="NUMBER" value="data:?sheet=1&amp;column=3"/>  <!-- AS_IS_PRODUCT_CODE-->
+            <InParam index="6" type="NUMBER" value="data:?sheet=1&amp;column=4"/>  <!-- POLICY_STATE-->
+            <InParam index="7" type="VARCHAR2" value="data:?sheet=1&amp;column=5"/>  <!-- INTERNAL_AGENT_NO-->
+            <InParam index="8" type="VARCHAR2" value="data:?sheet=1&amp;column=6"/>  <!-- INTERNAL_AGENT_NAME-->
+            <InParam index="9" type="VARCHAR2" value="data:?sheet=1&amp;column=7"/>  <!-- ECONO_GROUP_CODE-->
+            <InParam index="10" type="VARCHAR2" value="data:?sheet=1&amp;column=8"/>  <!-- ECONO_GROUP_NAME-->
+            <InParam index="11" type="VARCHAR2" value="data:?sheet=1&amp;column=9"/>  <!-- POLICY_NAME-->
+            <InParam index="12" type="VARCHAR2" value="data:?sheet=1&amp;column=10"/>  <!-- POLICY_HOLDER_CODE-->
+            <InParam index="13" type="VARCHAR2" value="data:?sheet=1&amp;column=11"/>  <!-- BROKER_CODE-->
+            <InParam index="14" type="NUMBER" value="data:?sheet=1&amp;column=12"/>  <!-- SALES_CHANNEL_CODE-->
+            <InParam index="15" type="NUMBER" value="data:?sheet=1&amp;column=13"/>  <!-- COMMISS_PERC-->
+            <InParam index="16" type="NUMBER" value="data:?sheet=1&amp;column=14"/>  <!-- OFFICE_NUMBER-->
+            <InParam index="17" type="NUMBER" value="data:?sheet=1&amp;column=15"/>  <!-- ACTIVITY_CODE-->
+            <InParam index="18" type="VARCHAR2" value="data:?sheet=1&amp;column=16"/>  <!-- ACTIVITY_DETAIL-->
+            <InParam index="19" type="VARCHAR2" value="data:?sheet=1&amp;column=17"/>  <!-- CURRENCY_CODE-->
+            <InParam index="20" type="VARCHAR2" value="data:?sheet=1&amp;column=18"/>  <!-- BEGIN_DATE-->
+            <InParam index="21" type="VARCHAR2" value="data:?sheet=1&amp;column=19"/>  <!-- END_DATE-->
+            <InParam index="22" type="VARCHAR2" value="data:?sheet=1&amp;column=20"/>  <!-- DATE_COVERED-->
+            <InParam index="23" type="NUMBER" value="data:?sheet=1&amp;column=21"/>  <!-- PREM_PERIOD_CODE-->
+			<InParam index="24" type="NUMBER" value="data:?sheet=1&amp;column=22"/>  <!-- POLICY_SALUD-->
+            <InParam index="25" type="NUMBER" value="data:?sheet=1&amp;column=23"/>  <!-- MIN_PREM_ISSUE-->
+            <InParam index="26" type="NUMBER" value="data:?sheet=1&amp;column=24"/>  <!-- MIN_PREM_ATTACH-->
+            <InParam index="27" type="NUMBER" value="data:?sheet=1&amp;column=25"/>  <!-- ISS_EXP_PERCENTAGE-->
+            <InParam index="28" type="NUMBER" value="data:?sheet=1&amp;column=26"/>  <!-- MIN_ISS_EXPENSES-->
+            <InParam index="29" type="NUMBER" value="data:?sheet=1&amp;column=27"/>  <!-- CALCULATION_TYPE-->
+            <InParam index="30" type="NUMBER" value="data:?sheet=1&amp;column=28"/>  <!-- BILLING_TYPE-->
+            <InParam index="31" type="NUMBER" value="data:?sheet=1&amp;column=29"/>  <!-- BILLING_WAY-->
+            <InParam index="32" type="VARCHAR2" value="data:?sheet=1&amp;column=30"/>  <!-- WARRANTY_CLAUSE_FLAG-->
+            <InParam index="33" type="VARCHAR2" value="data:?sheet=1&amp;column=31"/>  <!-- SPEC_PEN_CLAUSE_FLAG-->
+            <InParam index="34" type="VARCHAR2" value="data:?sheet=1&amp;column=32"/>  <!-- SPEC_PEN_CLAUSE_DETAIL-->
+            <InParam index="35" type="VARCHAR2" value="data:?sheet=1&amp;column=33"/>  <!-- GRATUITY_FLAG-->
+            <InParam index="36" type="VARCHAR2" value="data:?sheet=1&amp;column=34"/>  <!-- CONSORTIUM_FLAG-->
+            <InParam index="37" type="VARCHAR2" value="data:?sheet=1&amp;column=35"/>  <!-- ELEC_POL_FLAG-->
+            <InParam index="38" type="VARCHAR2" value="data:?sheet=1&amp;column=36"/>  <!-- TENDER_FLAG-->
+            <InParam index="39" type="NUMBER" value="data:?sheet=1&amp;column=37"/>  <!-- WC_RM1-->
+            <InParam index="40" type="NUMBER" value="data:?sheet=1&amp;column=38"/>  <!-- RN_RM1-->
+            <InParam index="41" type="NUMBER" value="data:?sheet=1&amp;column=39"/>  <!-- WC_RM2-->
+            <InParam index="42" type="NUMBER" value="data:?sheet=1&amp;column=40"/>  <!-- WD_RM2-->
+            <InParam index="43" type="NUMBER" value="data:?sheet=1&amp;column=41"/>  <!-- RN_RM2-->
+            <InParam index="44" type="NUMBER" value="data:?sheet=1&amp;column=42"/>  <!-- WC_RM3-->
+            <InParam index="45" type="NUMBER" value="data:?sheet=1&amp;column=43"/>  <!-- WD_RM3-->
+            <InParam index="46" type="NUMBER" value="data:?sheet=1&amp;column=44"/>  <!-- RN_RM3-->
+            <InParam index="47" type="NUMBER" value="data:?sheet=1&amp;column=45"/>  <!-- WC_RM4-->
+            <InParam index="48" type="NUMBER" value="data:?sheet=1&amp;column=46"/>  <!-- WD_RM4-->
+            <InParam index="49" type="NUMBER" value="data:?sheet=1&amp;column=47"/>  <!-- RN_RM4-->
+            <InParam index="50" type="NUMBER" value="data:?sheet=1&amp;column=48"/>  <!-- WC_RM5-->
+            <InParam index="51" type="NUMBER" value="data:?sheet=1&amp;column=49"/>  <!-- WD_RM5-->
+            <InParam index="52" type="NUMBER" value="data:?sheet=1&amp;column=50"/>  <!-- RN_RM5-->
+        </Function>
+    </Element>
+    <PostProcess>
+        <Function signature="{ call CUST_MIGRATION.FA_CUST_MIGR_SCTR.sctr_wrapper (?,?,?,?) }">
+            <InParam index="1" type="INTEGER" value="ref:PreProcess#Function##3"/>
+            <InParam index="2" type="INTEGER" value="meta:context:FILE_ID"/>
+            <InParam index="3" type="VARCHAR" value="meta:file:name"/>
+            <InParam index="4" type="VARCHAR" value="XLS_MIGR_SCTR"/>
+        </Function>
+    </PostProcess>
+</Poller>

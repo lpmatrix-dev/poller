@@ -1,0 +1,99 @@
+<Poller name="XLS_MIGR_SCTR_REP" 
+    class="com.fadata.insis.adapters.fileadapter.XLSXExportDBPoller" 
+    pollingInterval="2m" 
+    startingFrom="never" 
+    queueDir="${domain.home}/../../applications/${weblogic.domain}/${weblogic.Name}/pollers/migration_sctr/export/queue" 
+    archiveDir="${domain.home}/../../applications/${weblogic.domain}/${weblogic.Name}/pollers/migration_sctr/export/archive" 
+    errorDir="${domain.home}/../../applications/${weblogic.domain}/${weblogic.Name}/pollers/migration_sctr/export/errors" 
+    metadataDir="${domain.home}/../../applications/${weblogic.domain}/${weblogic.Name}/pollers/migration_sctr/export/meta" 
+    tempDir="${domain.home}/../../applications/${weblogic.domain}/${weblogic.Name}/pollers/migration_sctr/export/tmp" 
+    flushLimit="100000" 
+    stopOnError="true">
+    <PreProcess>
+        <Function id="LastSuccessUploadSctrProcess" signature="{ call CUST_MIGRATION.FA_CUST_MIGR_SCTR.get_last_record_for_report(?,?,?) }">
+            <OutParam index="1" type="NUMBER" hint="Result"/>                           <!-- po_poller_id -->
+            <OutParam index="2" type="VARCHAR" hint="Result"/>                          <!-- po_file_name -->
+            <OutParam index="3" type="INTEGER" hint="SuccessFlag" successValue="1"/>    <!-- po_success_flag -->
+        </Function>
+        <Function id="PollerControlProcess" signature="{ call INSIS_CUST_LPV.SYS_SCHEMA_UTILS.Insert_Poller_Process(?,?,?) }">
+            <InParam index="1" type="VARCHAR" value="XLS_MIGR_SCTR_REP"/>
+            <InParam index="2" type="VARCHAR" value="ref:PreProcess#Function#LastSuccessUploadSctrProcess#2"/>
+            <OutParam index="3" type="NUMBER" hint="Result"/>
+        </Function>
+    </PreProcess>
+    <Element xpath="Sctr_Load" target="sheet">
+        <SQLStatement id="1">
+            <SQL>
+				SELECT 
+                    TO_NUMBER(mas.rowseq) AS FILA,
+                    mas.att_policy_id AS POLICY_ID,
+                    pol.policy_name AS POLICY_NAME,
+                    (SELECT peo.NAME 
+                    FROM insis_people_v10.p_people peo
+                    INNER JOIN insis_cust.intrf_lpv_people_ids ids ON peo.man_id=ids.man_id
+                    WHERE ids.insunix_code=mas.policy_holder_code) AS POLICY_HOLDER,
+                    pol.insr_begin AS BEGIN_DATE,
+                    pol.insr_end AS END_DATE,
+                    pol.policy_state||&apos;-&apos;||hps.NAME AS POLICY_STATE,
+                    &apos;SUCCESS&apos; AS RESULT,
+                    NULL AS ERR_DETAIL
+				FROM cust_migration.fa_migr_sctr_stg mas
+				LEFT JOIN insis_gen_v10.policy pol ON pol.policy_id=mas.att_policy_id
+				LEFT JOIN insis_gen_v10.hst_policy_state hps ON pol.policy_state=hps.ID
+				WHERE mas.control_id=${current_batch_id}
+				AND mas.att_status=&apos;2&apos;
+				UNION
+				SELECT 
+                    TO_NUMBER(mas.rowseq) AS FILA,
+                    TO_NUMBER('') AS POLICY_ID,
+                    &apos;&apos; AS POLICY_NAME,
+                    &apos;&apos; AS POLICY_HOLDER,
+                    NULL AS BEGIN_DATE,
+                    NULL AS END_DATE,
+                    &apos;&apos; AS POLICY_STATE,
+                    &apos;ERROR&apos; AS RESULT,
+                    err.errcode ||'-'|| err.errmess AS ERR_DETAIL
+				FROM cust_migration.fa_migr_sctr_stg mas 
+				INNER JOIN cust_migration.fa_migr_sctr_err err ON mas.control_id=err.control_id AND mas.stag_id=err.stag_id
+				WHERE mas.control_id=${current_batch_id}
+				AND mas.att_status=&apos;3&apos;
+				ORDER BY 1
+			</SQL>
+            <InParam index="current_batch_id" type="INTEGER" value="ref:PreProcess#Function#LastSuccessUploadSctrProcess#1"/>
+            <OutParam index="FILA" type="NUMBER" format="#"/>
+            <OutParam index="POLICY_ID" type="NUMBER" format="#"/>
+            <OutParam index="POLICY_NAME" type="VARCHAR"/>
+            <OutParam index="POLICY_HOLDER" type="VARCHAR"/>
+            <OutParam index="BEGIN_DATE" type="VARCHAR"/>
+            <OutParam index="END_DATE" type="VARCHAR"/>
+            <OutParam index="POLICY_STATE" type="VARCHAR"/>
+            <OutParam index="RESULT" type="VARCHAR"/>
+            <OutParam index="ERR_DETAIL" type="VARCHAR"/>
+        </SQLStatement>
+    </Element>
+    <Output>
+        <OutputFileName id="Policy_Load">
+            <Part type="ref">PreProcess#Function#LastSuccessUploadSctrProcess#2</Part>
+            <Sheet id="Sctr_Load">
+                <Header>
+                    <Column index="1" name="Fila"/>
+                    <Column index="2" name="Policy ID"/>
+                    <Column index="3" name="Policy Name"/>
+                    <Column index="4" name="Policy Holder Name"/>
+                    <Column index="5" name="Begin Date"/>
+                    <Column index="6" name="End Date"/>
+                    <Column index="7" name="Policy State"/>
+                    <Column index="8" name="Result"/>
+                    <Column index="9" name="Error Detail"/>
+                </Header>
+            </Sheet>
+        </OutputFileName>
+    </Output>
+    <PostProcess>
+        <Function signature="{ call CUST_MIGRATION.FA_CUST_MIGR_SCTR.upd_last_record_for_report (?,?,?) }">
+            <InParam index="1" type="INTEGER" value="ref:PreProcess#Function#PollerControlProcess#3"/>
+            <InParam index="2" type="INTEGER" value="meta:context:FILE_ID"/>
+            <InParam index="3" type="INTEGER" value="ref:PreProcess#Function#LastSuccessUploadSctrProcess#1"/>
+        </Function>
+    </PostProcess>
+</Poller>
