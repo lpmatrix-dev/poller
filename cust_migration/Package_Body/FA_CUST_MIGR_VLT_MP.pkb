@@ -33,6 +33,7 @@ create or replace PACKAGE BODY                fa_cust_migr_vlt_mp AS
     --     LPV-FRAMEND0     2020-09-03      ISS099-Rename objects
     --     LPV-FRAMEND0     2020-09-03      ISS086-Add Internal agent 0 group
     --     LPV-FRAMEND0     2020-09-14      ISS102-Economic group set as optional
+    --     LPV-JAVCANC0     2020-11-08      Sprint7 - Delete legal_limit_flag and add validate LOV
     ---------------------------------------------------------------------------------
 
     l_log_seq_ini           cust_migration.sta_log.rec_count%TYPE := 1400000000000;
@@ -245,7 +246,7 @@ create or replace PACKAGE BODY                fa_cust_migr_vlt_mp AS
         pi_transfer_num_sal         IN  fa_migr_vlt_mp_pol.transfer_num_sal%TYPE,
         pi_transfer_max_si          IN  fa_migr_vlt_mp_pol.transfer_max_si%TYPE,
         pi_unid_policy_flag         IN  fa_migr_vlt_mp_pol.unid_policy_flag%TYPE,
-        pi_legal_limit_flag         IN  fa_migr_vlt_mp_pol.legal_limit_flag%TYPE,
+--        pi_legal_limit_flag         IN  fa_migr_vlt_mp_pol.legal_limit_flag%TYPE,
         pi_legal_limit_clause_flag  IN  fa_migr_vlt_mp_pol.legal_limit_clause_flag%TYPE,
         pi_no_salary_limit_flag     IN  fa_migr_vlt_mp_pol.no_salary_limit_flag%TYPE,
         pi_indem_pay_clause_flag    IN  fa_migr_vlt_mp_pol.indem_pay_clause_flag%TYPE,
@@ -352,7 +353,7 @@ create or replace PACKAGE BODY                fa_cust_migr_vlt_mp AS
             transfer_num_sal,
             transfer_max_si,
             unid_policy_flag,
-            legal_limit_flag,
+--            legal_limit_flag,
             legal_limit_clause_flag,
             no_salary_limit_flag,
             indem_pay_clause_flag,
@@ -444,7 +445,7 @@ create or replace PACKAGE BODY                fa_cust_migr_vlt_mp AS
             pi_transfer_num_sal,
             pi_transfer_max_si,
             pi_unid_policy_flag,
-            pi_legal_limit_flag,
+--            pi_legal_limit_flag,
             pi_legal_limit_clause_flag,
             pi_no_salary_limit_flag,
             pi_indem_pay_clause_flag,
@@ -676,10 +677,329 @@ create or replace PACKAGE BODY                fa_cust_migr_vlt_mp AS
                             pio_errmsg      => pio_errmsg
                         );
 
-            END IF;
+            end if;
+            
+            if rec_stag_data.as_is <> '1' OR rec_stag_data.as_is is null then
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'as_is no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+            if rec_stag_data.policy_state not in (-2,0) OR rec_stag_data.policy_state is null then
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'policy_state no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+            if rec_stag_data.epolicy_flag not in ('Y','N') OR rec_stag_data.epolicy_flag is null then
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'epolicy_flag (Póliza electrónica) no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+            if rec_stag_data.currency not in ('PEN','USD') OR rec_stag_data.currency is null then
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'currency (Moneda) no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+            if rec_stag_data.channel not in (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22) OR rec_stag_data.channel is null then
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'channel (Canal) no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+            if rec_stag_data.office not in (1,2,3,4,5,6,9,12,13,14,15,18,19,24,26,32,33,34,35,37,43,48,49,55,56,57,58,60,62,68,76,77,78,81,82,83,100,101) OR rec_stag_data.office is null then
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'office (Oficina) no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
 
-
-
+            if rec_stag_data.frequency not in (0,1,2,3,4,6,12) OR rec_stag_data.frequency is null then
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'frequency (Frecuencia de pago) no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+            if rec_stag_data.consortium_flag not in ('Y','N') OR  rec_stag_data.consortium_flag is null then
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'consortium_flag (Póliza consorcio) no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+            if rec_stag_data.tender_flag not in ('Y','N') OR rec_stag_data.tender_flag  is null then
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'tender_flag (Póliza licitación) no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+            if rec_stag_data.billing_type not in (1,2,3) OR rec_stag_data.billing_type is null then
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'billing_type (Tipo de facturación) no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+            if rec_stag_data.prem_cal_period not in (1,2,3) OR rec_stag_data.prem_cal_period is null then
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'prem_cal_period (Tipo cálculo de prima) no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+            if rec_stag_data.billing_by not in (1,2) OR rec_stag_data.billing_by is null then
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'billing_by (Facturación por)  no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+            if rec_stag_data.plan not in (1,2,3,4,5,6) OR rec_stag_data.plan is null then
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'PLAN no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+            if rec_stag_data.legal_cov_flag not in ('Y','N') OR rec_stag_data.legal_cov_flag is null then                
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'legal_cov_flag (Pólizas solo con coberturas de ley) no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+            if rec_stag_data.unid_policy_flag is null OR rec_stag_data.unid_policy_flag not in ('Y','N') then                
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'unid_policy_flag (Póliza No Nominativa) no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+            if rec_stag_data.legal_limit_clause_flag is null OR rec_stag_data.legal_limit_clause_flag not in ('Y','N') then                
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'legal_limit_clause_flag - Cláusula Tope de Ley (608) no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+            if rec_stag_data.no_salary_limit_flag is null OR rec_stag_data.no_salary_limit_flag not in ('Y','N') then                
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'no_salary_limit_flag - Cláusula Sin Tope de Ley (601) no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+              if (rec_stag_data.no_salary_limit_flag = 'Y' and rec_stag_data.legal_limit_clause_flag = 'Y') or (rec_stag_data.no_salary_limit_flag = 'N' and rec_stag_data.legal_limit_clause_flag = 'N') then                
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'Ambas clausulas (608,601) tienen el mismo valor',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+            if rec_stag_data.INDEM_PAY_CLAUSE_FLAG is null OR rec_stag_data.INDEM_PAY_CLAUSE_FLAG not in ('Y','N') then                
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'INDEM_PAY_CLAUSE_FLAG - Cláusula Pago de indemnizaciones (602) no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+            if rec_stag_data.CLAIM_PAY_CLAUSE_FLAG is null OR rec_stag_data.CLAIM_PAY_CLAUSE_FLAG not in ('Y','N') then                
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'CLAIM_PAY_CLAUSE_FLAG - Cláusula Plazo de pago de Siniestros (603) no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+            if rec_stag_data.currency_clause_flag is null OR rec_stag_data.currency_clause_flag not in ('Y','N') then                
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'CURRENCY_CLAUSE_FLAG - Cláusula Moneda (605) no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+            if rec_stag_data.waiting_clause_flag is null OR rec_stag_data.waiting_clause_flag not in ('Y','N') then                
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'WAITING_CLAUSE_FLAG - Cláusula Periodo de carencia (606) no existe',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
+            
+            if (rec_stag_data.EMPL1_RATE is null and rec_stag_data.EMPL2_RATE is null and rec_stag_data.HIGH_RISK1_RATE is null and rec_stag_data.HIGH_RISK2_RATE is null and rec_stag_data.low_risk1_rate is null and rec_stag_data.LOW_RISK2_RATE is null) then                
+                v_exito := 'ERR';
+                l_err_seq := l_err_seq + 1;
+                ins_error_stg(
+                            pi_sys_ctrl_id  => pi_sys_ctrl_id,
+                            pi_stg_id       => rec_stag_data.stag_id,
+                            pi_errseq       => l_err_seq,
+                            pi_errtype      => 'ERR',
+                            pi_errcode      => null,
+                            pi_errmess      => 'No tiene Tasa',
+                            pio_errmsg      => pio_errmsg
+                        );
+            end if;
 
 
             IF v_exito = 'OK' THEN
@@ -1762,8 +2082,8 @@ create or replace PACKAGE BODY                fa_cust_migr_vlt_mp AS
         update_conditions('LEGAL_WAGE_LIMIT', yn_to_num(pi_fa_vley_row.legal_limit_clause_flag,1,2), NULL, l_master_policy_id, insis_gen_v10.gvar_pas.def_annx_id, pio_errmsg);
         --1:yes, 2:no. Note: 'UW_WAGE_LIMIT' has opposite value than 'LEGAL_WAGE_LIMIT', that is the reason to change Y-N param values
 --        update_conditions('UW_WAGE_LIMIT', yn_to_num(pi_fa_vley_row.legal_limit_flag,2,1), NULL, l_master_policy_id, insis_gen_v10.gvar_pas.def_annx_id, pio_errmsg);
-        update_conditions('UW_WAGE_LIMIT', yn_to_num(pi_fa_vley_row.no_salary_limit_flag,2,1), NULL, l_master_policy_id, insis_gen_v10.gvar_pas.def_annx_id, pio_errmsg);
-        --1:no, 2:yes
+        update_conditions('UW_WAGE_LIMIT', yn_to_num(pi_fa_vley_row.no_salary_limit_flag,1,2), NULL, l_master_policy_id, insis_gen_v10.gvar_pas.def_annx_id, pio_errmsg);
+        --1:yes, 2:no
         update_conditions('NO_NOMINATIVA', yn_to_num(pi_fa_vley_row.unid_policy_flag,2,1), NULL, l_master_policy_id, insis_gen_v10.gvar_pas.def_annx_id, pio_errmsg);
 
         update_conditions('FACTURA_POR', pi_fa_vley_row.billing_by, NULL, l_master_policy_id, insis_gen_v10.gvar_pas.def_annx_id, pio_errmsg);
