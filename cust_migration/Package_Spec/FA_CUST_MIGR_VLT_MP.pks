@@ -13,6 +13,7 @@ create or replace PACKAGE                fa_cust_migr_vlt_mp AS
     --     LPV-FRAMEND0     2020-04-27      ISS048-Fix endorsements. Add 601, remove 607
     --     LPV-FRAMEND0     2020-09-03      ISS099-Rename objects
     --     LPV-FRAMEND0     2020-09-03      ISS086-Add Internal agent 0 group
+    --     LPV-JAVCANC0     2020-11-08      Sprint7 - Delete legal_limit_flag
     ---------------------------------------------------------------------------------
 
 
@@ -122,7 +123,7 @@ create or replace PACKAGE                fa_cust_migr_vlt_mp AS
         pi_transfer_num_sal         IN  fa_migr_vlt_mp_pol.transfer_num_sal%TYPE,
         pi_transfer_max_si          IN  fa_migr_vlt_mp_pol.transfer_max_si%TYPE,
         pi_unid_policy_flag         IN  fa_migr_vlt_mp_pol.unid_policy_flag%TYPE,
-        pi_legal_limit_flag         IN  fa_migr_vlt_mp_pol.legal_limit_flag%TYPE,
+--        pi_legal_limit_flag         IN  fa_migr_vlt_mp_pol.legal_limit_flag%TYPE,
         pi_legal_limit_clause_flag  IN  fa_migr_vlt_mp_pol.legal_limit_clause_flag%TYPE,
         pi_no_salary_limit_flag     IN  fa_migr_vlt_mp_pol.no_salary_limit_flag%TYPE,
         pi_indem_pay_clause_flag    IN  fa_migr_vlt_mp_pol.indem_pay_clause_flag%TYPE,
