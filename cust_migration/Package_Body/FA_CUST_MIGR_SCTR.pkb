@@ -1199,7 +1199,7 @@ create or replace PACKAGE BODY fa_cust_migr_sctr AS
                         tdate(rec_sctr_master.begin_date),
                         rec_sctr_master.prem_period_code
                   ) > tdate(rec_sctr_master.end_date)
-            then
+            THEN
                   ins_error_stg(
                         pi_control_id,
                         rec_sctr_master.stag_id,
@@ -1211,11 +1211,11 @@ create or replace PACKAGE BODY fa_cust_migr_sctr AS
                         pio_err
                   );
                   v_exito   := 'ERR';
-            end if;
+            END IF;
             
-            if
+            IF
                   rec_sctr_master.policy_name is null
-            then
+            THEN
                   ins_error_stg(
                         pi_control_id,
                         rec_sctr_master.stag_id,
@@ -1225,21 +1225,22 @@ create or replace PACKAGE BODY fa_cust_migr_sctr AS
                         pio_err
                   );
                   v_exito   := 'ERR';
-            else
-                  if 
+            ELSE
+                  IF 
                         l_policy_no <> '9999999999'
-                  then 
-                        select p.policy_id, c.file_name
-                        into l_policy_id, l_file_name
-                        from insis_gen_v10.policy p
-                              left join cust_migration.fa_migr_sctr_stg s on
+                  THEN 
+                        BEGIN
+                        SELECT p.policy_id, c.file_name
+                        INTO l_policy_id, l_file_name
+                        FROM insis_gen_v10.policy p
+                              LEFT JOIN cust_migration.fa_migr_sctr_stg s on
                                     ( p.policy_id   = s.att_policy_id
                                     )
-                              left join insis_cust_lpv.sys_poller_process_ctrl c on
+                              LEFT JOIN insis_cust_lpv.sys_poller_process_ctrl c on
                                     ( c.SYS_POLLER_PROCESS_CTRL_ID   = s.CONTROL_ID
                                     )
-                        where p.policy_no   = rec_sctr_master.policy_name
-                          and control_id <> pi_control_id;
+                        WHERE p.policy_no   = rec_sctr_master.policy_name
+                          AND control_id <> pi_control_id;
                         ins_error_stg(
                               pi_control_id,
                               rec_sctr_master.stag_id,
@@ -1249,8 +1250,13 @@ create or replace PACKAGE BODY fa_cust_migr_sctr AS
                               pio_err
                         );
                         v_exito   := 'ERR';  
-                  end if;
-            end if;
+                        EXCEPTION
+                        WHEN NO_DATA_FOUND THEN
+                            l_policy_id := null;
+                            l_file_name := null;
+                        END;
+                  END IF;
+            END IF;
             
             
             
@@ -1409,6 +1415,7 @@ create or replace PACKAGE BODY fa_cust_migr_sctr AS
 
         COMMIT;
         putlog(pi_control_id,0,'sctr_wrapper|end');
+    
     EXCEPTION
         WHEN OTHERS THEN
             putlog(
@@ -1424,6 +1431,7 @@ create or replace PACKAGE BODY fa_cust_migr_sctr AS
                 sqlerrm,
                 pio_err
             );
+            
     END sctr_wrapper;
 
     PROCEDURE sctr_job_proc (

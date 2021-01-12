@@ -585,13 +585,13 @@ create or replace PACKAGE BODY                fa_cust_migr_vlt_mp AS
 
             END IF;
 
-            SELECT pa.agent_type
-                   INTO l_agent_type
-            FROM insis_cust.intrf_lpv_people_ids lc,
-               insis_people_v10.p_agents pa
-            WHERE lc.man_id = pa.man_id
-            AND lc.insunix_code = rec_stag_data.BROKER_INX_ID;
-
+            BEGIN
+                SELECT pa.agent_type
+                INTO l_agent_type
+                FROM insis_cust.intrf_lpv_people_ids lc,
+                   insis_people_v10.p_agents pa
+                WHERE lc.man_id = pa.man_id
+                AND lc.insunix_code = rec_stag_data.BROKER_INX_ID;            
             IF
                   rec_stag_data.channel = 3
             THEN --DIRECTOS
@@ -613,12 +613,12 @@ create or replace PACKAGE BODY                fa_cust_migr_vlt_mp AS
                   END IF;
             end if;
             
-            if
+            IF
                   rec_stag_data.channel = 1
             THEN --BROKER
                   IF
                         l_agent_type <> 5
-                  then
+                  THEN
                         v_exito     := 'ERR';
                         l_err_seq   := l_err_seq + 1;
                         ins_error_stg(
@@ -632,7 +632,23 @@ create or replace PACKAGE BODY                fa_cust_migr_vlt_mp AS
                         );
             
                   END IF;
-            END IF;        
+            END IF;  
+            EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                l_agent_type := NULL;
+                --putlog(pi_fa_vley_row.control_id,pi_fa_vley_row.stag_id, '--update_conditions.err:'||SQLERRM);
+                v_exito     := 'ERR';
+                l_err_seq   := l_err_seq + 1;
+                ins_error_stg(
+                          pi_sys_ctrl_id   => pi_sys_ctrl_id,
+                          pi_stg_id        => rec_stag_data.stag_id,
+                          pi_errseq        => l_err_seq,
+                          pi_errtype       => 'ERR',
+                          pi_errcode       => NULL,
+                          pi_errmess       => 'BROKER_INX_ID no tiene equivalencia en intrf_lpv_people_ids',
+                          pio_errmsg       => pio_errmsg
+                        );
+            END;
 
             IF rec_stag_data.NATDEATH_SAL < 16 THEN
                 v_exito := 'ERR';
