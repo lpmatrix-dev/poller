@@ -56,19 +56,19 @@
             <InParam index="37" type="VARCHAR2" value="data:?sheet=1&amp;column=35"/>  <!-- ELEC_POL_FLAG-->
             <InParam index="38" type="VARCHAR2" value="data:?sheet=1&amp;column=36"/>  <!-- TENDER_FLAG-->
             <InParam index="39" type="NUMBER" value="data:?sheet=1&amp;column=37"/>  <!-- WC_RM1-->
-            <InParam index="40" type="NUMBER" value="data:?sheet=1&amp;column=38"/>  <!-- RN_RM1-->
+            <InParam index="40" type="VARCHAR2" value="data:?sheet=1&amp;column=38"/>  <!-- RN_RM1-->
             <InParam index="41" type="NUMBER" value="data:?sheet=1&amp;column=39"/>  <!-- WC_RM2-->
             <InParam index="42" type="NUMBER" value="data:?sheet=1&amp;column=40"/>  <!-- WD_RM2-->
-            <InParam index="43" type="NUMBER" value="data:?sheet=1&amp;column=41"/>  <!-- RN_RM2-->
+            <InParam index="43" type="VARCHAR2" value="data:?sheet=1&amp;column=41"/>  <!-- RN_RM2-->
             <InParam index="44" type="NUMBER" value="data:?sheet=1&amp;column=42"/>  <!-- WC_RM3-->
             <InParam index="45" type="NUMBER" value="data:?sheet=1&amp;column=43"/>  <!-- WD_RM3-->
-            <InParam index="46" type="NUMBER" value="data:?sheet=1&amp;column=44"/>  <!-- RN_RM3-->
+            <InParam index="46" type="VARCHAR2" value="data:?sheet=1&amp;column=44"/>  <!-- RN_RM3-->
             <InParam index="47" type="NUMBER" value="data:?sheet=1&amp;column=45"/>  <!-- WC_RM4-->
             <InParam index="48" type="NUMBER" value="data:?sheet=1&amp;column=46"/>  <!-- WD_RM4-->
-            <InParam index="49" type="NUMBER" value="data:?sheet=1&amp;column=47"/>  <!-- RN_RM4-->
+            <InParam index="49" type="VARCHAR2" value="data:?sheet=1&amp;column=47"/>  <!-- RN_RM4-->
             <InParam index="50" type="NUMBER" value="data:?sheet=1&amp;column=48"/>  <!-- WC_RM5-->
             <InParam index="51" type="NUMBER" value="data:?sheet=1&amp;column=49"/>  <!-- WD_RM5-->
-            <InParam index="52" type="NUMBER" value="data:?sheet=1&amp;column=50"/>  <!-- RN_RM5-->
+            <InParam index="52" type="VARCHAR2" value="data:?sheet=1&amp;column=50"/>  <!-- RN_RM5-->
         </Function>
     </Element>
     <PostProcess>

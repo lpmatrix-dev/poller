@@ -587,11 +587,13 @@ create or replace PACKAGE BODY                fa_cust_migr_vlt_mp AS
 
             BEGIN
                 SELECT pa.agent_type
-                INTO l_agent_type
+                       INTO l_agent_type
                 FROM insis_cust.intrf_lpv_people_ids lc,
                    insis_people_v10.p_agents pa
                 WHERE lc.man_id = pa.man_id
-                AND lc.insunix_code = rec_stag_data.BROKER_INX_ID;            
+                AND lc.insunix_code = rec_stag_data.BROKER_INX_ID;
+            
+
             IF
                   rec_stag_data.channel = 3
             THEN --DIRECTOS
@@ -613,12 +615,12 @@ create or replace PACKAGE BODY                fa_cust_migr_vlt_mp AS
                   END IF;
             end if;
             
-            IF
+            if
                   rec_stag_data.channel = 1
             THEN --BROKER
                   IF
                         l_agent_type <> 5
-                  THEN
+                  then
                         v_exito     := 'ERR';
                         l_err_seq   := l_err_seq + 1;
                         ins_error_stg(
@@ -863,7 +865,7 @@ create or replace PACKAGE BODY                fa_cust_migr_vlt_mp AS
                         );
             end if;
             
-            if rec_stag_data.plan not in (1,2,3,4,5,6) OR rec_stag_data.plan is null then
+            if rec_stag_data.plan not in (1,2,3,4,5,6,7) OR rec_stag_data.plan is null then
                 v_exito := 'ERR';
                 l_err_seq := l_err_seq + 1;
                 ins_error_stg(
@@ -1956,7 +1958,7 @@ create or replace PACKAGE BODY                fa_cust_migr_vlt_mp AS
                 --For plan 6-Tailored Plan, choose if all covers are shown, or only legal ones.
                 --NOTE: For Plan others than 6, all covers are being included by default according product configuration
                 IF pi_fa_vley_row.PLAN = 6 AND
-                   pi_fa_vley_row.legal_cov_flag = 'NO'  --"only legal cover?"
+                   pi_fa_vley_row.legal_cov_flag = 'N'  --"only legal cover?"
                 THEN
                     --todo : use standar objects
                     --todo : usar rutina generica. recbir valores, y nombre cobertura: if valores no nulos update ... where cover_type = ...
