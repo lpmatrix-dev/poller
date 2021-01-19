@@ -1,0 +1,120 @@
+<!-- XLS_MIGR_VLT_MP - Poller for VLEY TRABAJADORES Master policy migration -->
+<Poller name="XLS_MIGR_VLT_MP" 
+        class="com.fadata.insis.adapters.fileadapter.XLSXImportFilePoller" 
+        pollingInterval="30s" 
+        startingFrom="never" 
+        queueDir="${domain.home}/../../applications/${weblogic.domain}/${weblogic.Name}/pollers/migration_vlt_mp/import/queue" 
+        archiveDir="${domain.home}/../../applications/${weblogic.domain}/${weblogic.Name}/pollers/migration_vlt_mp/import/archive" 
+        errorDir="${domain.home}/../../applications/${weblogic.domain}/${weblogic.Name}/pollers/migration_vlt_mp/import/errors" 
+        metadataDir="${domain.home}/../../applications/${weblogic.domain}/${weblogic.Name}/pollers/migration_vlt_mp/import/meta" 
+        logErrorsIntoDB="false" 
+        stopOnError="true">
+    <PreProcess>
+        <Function signature="{ call INSIS_CUST_LPV.SYS_SCHEMA_UTILS.Insert_Poller_Process(?,?,?) }">
+            <InParam index="1" type="VARCHAR" value="XLS_MIGR_VLT_MP"/>
+            <InParam index="2" type="VARCHAR" value="meta:file:name"/>
+            <OutParam index="3" type="INTEGER" hint="Result"/>
+        </Function>
+    </PreProcess>
+    <Element xpath="#1" startFromRow="2">
+        <Function signature="{ call CUST_MIGRATION.FA_CUST_MIGR_VLT_MP.upload_file_data(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) }">
+            <InParam index="1" type="NUMBER" value="ref:PreProcess#Function##3"/> <!-- CONTROL_ID-->
+            <InParam index="2" type="NUMBER" value="0"/> <!-- STAG_ID-->
+            <InParam index="3" type="NUMBER" value="data:?sheet=1&amp;column=1"/> <!-- ROWSEQ-->
+            <InParam index="4" type="NUMBER" value="data:?sheet=1&amp;column=2"/> <!-- INSR_TYPE-->
+            <InParam index="5" type="VARCHAR2" value="data:?sheet=1&amp;column=3"/> <!-- AS_IS-->
+            <InParam index="6" type="VARCHAR2" value="data:?sheet=1&amp;column=4"/> <!-- HOLDER_INX_ID-->
+            <InParam index="7" type="NUMBER" value="data:?sheet=1&amp;column=5"/> <!-- POLICY_STATE-->
+            <InParam index="8" type="VARCHAR2" value="data:?sheet=1&amp;column=6"/> <!-- INTERNAL_AGENT_NO-->
+            <InParam index="9" type="VARCHAR2" value="data:?sheet=1&amp;column=7"/> <!-- INTERNAL_AGENT_NAME-->
+            <InParam index="10" type="VARCHAR2" value="data:?sheet=1&amp;column=8"/> <!-- ECONO_GROUP_CODE-->
+            <InParam index="11" type="VARCHAR2" value="data:?sheet=1&amp;column=9"/> <!-- ECONO_GROUP_NAME-->
+            <InParam index="12" type="VARCHAR2" value="data:?sheet=1&amp;column=10"/> <!-- MASTER_POLICY_NO-->
+            <InParam index="13" type="VARCHAR2" value="data:?sheet=1&amp;column=11"/> <!-- MASTER_BEGIN_DATE-->
+            <InParam index="14" type="VARCHAR2" value="data:?sheet=1&amp;column=12"/> <!-- MASTER_END_DATE-->
+            <InParam index="15" type="VARCHAR2" value="data:?sheet=1&amp;column=13"/> <!-- EPOLICY_FLAG-->
+            <InParam index="16" type="VARCHAR2" value="data:?sheet=1&amp;column=14"/> <!-- COVERDATE-->
+            <InParam index="17" type="VARCHAR2" value="data:?sheet=1&amp;column=15"/> <!-- BROKER_INX_ID-->
+            <InParam index="18" type="NUMBER" value="data:?sheet=1&amp;column=16"/> <!-- BROK_COMM_PERC-->
+            <InParam index="19" type="VARCHAR2" value="data:?sheet=1&amp;column=17"/> <!-- CURRENCY-->
+            <InParam index="20" type="NUMBER" value="data:?sheet=1&amp;column=18"/> <!-- CHANNEL-->
+            <InParam index="21" type="NUMBER" value="data:?sheet=1&amp;column=19"/> <!-- OFFICE-->
+            <InParam index="22" type="NUMBER" value="data:?sheet=1&amp;column=20"/> <!-- FREQUENCY-->
+            <InParam index="23" type="VARCHAR2" value="data:?sheet=1&amp;column=21"/> <!-- CONSORTIUM_FLAG-->
+            <InParam index="24" type="VARCHAR2" value="data:?sheet=1&amp;column=22"/> <!-- TENDER_FLAG-->
+            <InParam index="25" type="NUMBER" value="data:?sheet=1&amp;column=23"/> <!-- BILLING_TYPE-->
+            <InParam index="26" type="NUMBER" value="data:?sheet=1&amp;column=24"/> <!-- PREM_CAL_PERIOD-->
+            <InParam index="27" type="NUMBER" value="data:?sheet=1&amp;column=25"/> <!-- BILLING_BY-->
+            <InParam index="28" type="NUMBER" value="data:?sheet=1&amp;column=26"/> <!-- ISSUING_MIN_PREM-->
+            <InParam index="29" type="VARCHAR2" value="data:?sheet=1&amp;column=27"/> <!-- EMPL1_RATE-->
+            <InParam index="30" type="VARCHAR2" value="data:?sheet=1&amp;column=28"/> <!-- EMPL2_RATE-->
+            <InParam index="31" type="VARCHAR2" value="data:?sheet=1&amp;column=29"/> <!-- HIGH_RISK1_RATE-->
+            <InParam index="32" type="VARCHAR2" value="data:?sheet=1&amp;column=30"/> <!-- HIGH_RISK2_RATE-->
+            <InParam index="33" type="VARCHAR2" value="data:?sheet=1&amp;column=31"/> <!-- LOW_RISK1_RATE-->
+            <InParam index="34" type="VARCHAR2" value="data:?sheet=1&amp;column=32"/> <!-- LOW_RISK2_RATE-->
+            <InParam index="35" type="NUMBER" value="data:?sheet=1&amp;column=33"/> <!-- NATDEATH_SAL-->
+            <InParam index="36" type="NUMBER" value="data:?sheet=1&amp;column=34"/> <!-- ACCDEATH_SAL-->
+            <InParam index="37" type="NUMBER" value="data:?sheet=1&amp;column=35"/> <!-- ITPA_SAL-->
+            <InParam index="38" type="NUMBER" value="data:?sheet=1&amp;column=36"/> <!-- PLAN-->
+            <InParam index="39" type="VARCHAR2" value="data:?sheet=1&amp;column=37"/> <!-- LEGAL_COV_FLAG-->
+            <InParam index="40" type="NUMBER" value="data:?sheet=1&amp;column=38"/> <!-- FE_NUM_SAL-->
+            <InParam index="41" type="NUMBER" value="data:?sheet=1&amp;column=39"/> <!-- FE_MAX_SI-->
+            <InParam index="42" type="NUMBER" value="data:?sheet=1&amp;column=40"/> <!-- DESG_NUM_SAL-->
+            <InParam index="43" type="NUMBER" value="data:?sheet=1&amp;column=41"/> <!-- DESG_MAX_SI-->
+            <InParam index="44" type="NUMBER" value="data:?sheet=1&amp;column=42"/> <!-- HOMELESS_NUM_SAL-->
+            <InParam index="45" type="NUMBER" value="data:?sheet=1&amp;column=43"/> <!-- HOMELESS_MAX_SI-->
+            <InParam index="46" type="NUMBER" value="data:?sheet=1&amp;column=44"/> <!-- ANTTERMILL_NUM_SAL-->
+            <InParam index="47" type="NUMBER" value="data:?sheet=1&amp;column=45"/> <!-- ANTTERMILL_MAX_SI-->
+            <InParam index="48" type="NUMBER" value="data:?sheet=1&amp;column=46"/> <!-- CANCER_DEATH_NUM_SAL-->
+            <InParam index="49" type="NUMBER" value="data:?sheet=1&amp;column=47"/> <!-- CANCER_DEATH_MAX_SI-->
+            <InParam index="50" type="NUMBER" value="data:?sheet=1&amp;column=48"/> <!-- CANCER_NUM_SAL-->
+            <InParam index="51" type="NUMBER" value="data:?sheet=1&amp;column=49"/> <!-- CANCER_MAX_SI-->
+            <InParam index="52" type="NUMBER" value="data:?sheet=1&amp;column=50"/> <!-- CRITMYO_NUM_SAL-->
+            <InParam index="53" type="NUMBER" value="data:?sheet=1&amp;column=51"/> <!-- CRITMYO_MAX_SI-->
+            <InParam index="54" type="NUMBER" value="data:?sheet=1&amp;column=52"/> <!-- CISTROKE_NUM_SAL-->
+            <InParam index="55" type="NUMBER" value="data:?sheet=1&amp;column=53"/> <!-- CISTROKE_MAX_SI-->
+            <InParam index="56" type="NUMBER" value="data:?sheet=1&amp;column=54"/> <!-- CICRF_NUM_SAL-->
+            <InParam index="57" type="NUMBER" value="data:?sheet=1&amp;column=55"/> <!-- CICRF_MAX_SI-->
+            <InParam index="58" type="NUMBER" value="data:?sheet=1&amp;column=56"/> <!-- CIMULTSCL_NUM_SAL-->
+            <InParam index="59" type="NUMBER" value="data:?sheet=1&amp;column=57"/> <!-- CIMULTSCL_MAX_SI-->
+            <InParam index="60" type="NUMBER" value="data:?sheet=1&amp;column=58"/> <!-- CICOMA_NUM_SAL-->
+            <InParam index="61" type="NUMBER" value="data:?sheet=1&amp;column=59"/> <!-- CICOMA_MAX_SI-->
+            <InParam index="62" type="NUMBER" value="data:?sheet=1&amp;column=60"/> <!-- CIBYPASS_NUM_SAL-->
+            <InParam index="63" type="NUMBER" value="data:?sheet=1&amp;column=61"/> <!-- CIBYPASS_MAX_SI-->
+            <InParam index="64" type="NUMBER" value="data:?sheet=1&amp;column=62"/> <!-- CRITILL_NUM_SAL-->
+            <InParam index="65" type="NUMBER" value="data:?sheet=1&amp;column=63"/> <!-- CRITILL_MAX_SI-->
+            <InParam index="66" type="NUMBER" value="data:?sheet=1&amp;column=64"/> <!-- BLINDNESS_NUM_SAL-->
+            <InParam index="67" type="NUMBER" value="data:?sheet=1&amp;column=65"/> <!-- BLINDNESS_MAX_SI-->
+            <InParam index="68" type="NUMBER" value="data:?sheet=1&amp;column=66"/> <!-- CRITBURN_NUM_SAL-->
+            <InParam index="69" type="NUMBER" value="data:?sheet=1&amp;column=67"/> <!-- CRITBURN_MAX_SI-->
+            <InParam index="70" type="NUMBER" value="data:?sheet=1&amp;column=68"/> <!-- POSTHUM_CHILD_NUM_SAL-->
+            <InParam index="71" type="NUMBER" value="data:?sheet=1&amp;column=69"/> <!-- POSTHUM_CHILD_MAX_SI-->
+            <InParam index="72" type="NUMBER" value="data:?sheet=1&amp;column=70"/> <!-- DEAFNESS_NUM_SAL-->
+            <InParam index="73" type="NUMBER" value="data:?sheet=1&amp;column=71"/> <!-- DEAFNESS_MAX_SI-->
+            <InParam index="74" type="NUMBER" value="data:?sheet=1&amp;column=72"/> <!-- FAM_SAL_PERC-->
+            <InParam index="75" type="NUMBER" value="data:?sheet=1&amp;column=73"/> <!-- FAM_NUM_SAL-->
+            <InParam index="76" type="NUMBER" value="data:?sheet=1&amp;column=74"/> <!-- FAM_MAX_SI-->
+            <InParam index="77" type="NUMBER" value="data:?sheet=1&amp;column=75"/> <!-- REPREM_NUM_SAL-->
+            <InParam index="78" type="NUMBER" value="data:?sheet=1&amp;column=76"/> <!-- REPREM_MAX_SI-->
+            <InParam index="79" type="NUMBER" value="data:?sheet=1&amp;column=77"/> <!-- INABWORK_NUM_SAL-->
+            <InParam index="80" type="NUMBER" value="data:?sheet=1&amp;column=78"/> <!-- INABWORK__MAX_SI-->
+            <InParam index="81" type="NUMBER" value="data:?sheet=1&amp;column=79"/> <!-- TRANSFER_NUM_SAL-->
+            <InParam index="82" type="NUMBER" value="data:?sheet=1&amp;column=80"/> <!-- TRANSFER_MAX_SI-->
+            <InParam index="83" type="VARCHAR2" value="data:?sheet=1&amp;column=81"/> <!-- UNID_POLICY_FLAG-->
+            <InParam index="84" type="VARCHAR2" value="data:?sheet=1&amp;column=82"/> <!-- LEGAL_LIMIT_CLAUSE_FLAG-->
+            <InParam index="85" type="VARCHAR2" value="data:?sheet=1&amp;column=83"/> <!-- NO_SALARY_LIMIT_FLAG-->
+            <InParam index="86" type="VARCHAR2" value="data:?sheet=1&amp;column=84"/> <!-- INDEM_PAY_CLAUSE_FLAG-->
+            <InParam index="87" type="VARCHAR2" value="data:?sheet=1&amp;column=85"/> <!-- CLAIM_PAY_CLAUSE_FLAG-->
+            <InParam index="88" type="VARCHAR2" value="data:?sheet=1&amp;column=86"/> <!-- CURRENCY_CLAUSE_FLAG-->
+            <InParam index="89" type="VARCHAR2" value="data:?sheet=1&amp;column=87"/> <!-- WAITING_CLAUSE_FLAG-->
+            <InParam index="90" type="VARCHAR2" value="data:?sheet=1&amp;column=88"/> <!-- SPECIAL_CLAUSE_TEXT-->
+        </Function>
+    </Element>
+    <PostProcess>
+        <Function signature="{ call CUST_MIGRATION.FA_CUST_MIGR_VLT_MP.vley_wrapper (?,?,?) }">
+            <InParam index="1" type="INTEGER" value="ref:PreProcess#Function##3"/>
+            <InParam index="2" type="INTEGER" value="meta:context:FILE_ID"/>
+            <InParam index="3" type="VARCHAR" value="meta:file:name"/>
+        </Function>
+    </PostProcess>
+</Poller>
